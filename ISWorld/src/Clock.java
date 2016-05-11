@@ -28,8 +28,6 @@ public class Clock implements Runnable{
 	}
 
 	public String getTimeStamp() {
-		
-
 		return this.year + "yr " + Month.of(this.month).name() + " " + this.day + " " + this.hour + "hh " + this.minuate + "mm " + this.sec + "ss";
 	}
 	

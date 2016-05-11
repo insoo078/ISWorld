@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -13,7 +14,7 @@ public class Universe implements Runnable{
 
 	private volatile boolean stop;
 
-	Map< String, List<Particles> > particles;
+	private List<Particles> particles;
 
 	public Universe(String name) {
 		this.name = name;
@@ -35,23 +36,24 @@ public class Universe implements Runnable{
 //	public static final int OXYGEN = 10;		0.078
 //	public static final int ETC = 99;			0.00072
 	
-	private static Map<String, List<Particles>> getParticlesMap() { 
-		long n = (long)(100000 + (Math.random() * 10000));
+	private static List<Particles> getParticlesList() { 
+		long n = (long)(100 + (Math.random() * 10));
 
-		Map<String, List<Particles>> particleMap = new HashMap<String, List<Particles>>();
-		particleMap.put("CARBON",		Universe.getTypeParticles( Particles.CARBON,	(int)(n * 0.33) ) );
-		particleMap.put("NITROGEN",		Universe.getTypeParticles( Particles.NITROGEN,	(int)(n * 0.10) ) );
-		particleMap.put("NEON", 		Universe.getTypeParticles( Particles.NEON,		(int)(n * 0.098) ) );
-		particleMap.put("MAGNETIUM",	Universe.getTypeParticles( Particles.MAGNETIUM,	(int)(n * 0.033) ) );
-		particleMap.put("SILICON",		Universe.getTypeParticles( Particles.SILICON,	(int)(n * 0.033) ) );
-		particleMap.put("IRON",			Universe.getTypeParticles( Particles.IRON,		(int)(n * 0.029) ) );
-		particleMap.put("SULPHUR",		Universe.getTypeParticles( Particles.SULPHUR,	(int)(n * 0.015) ) );
-		particleMap.put("ARGON",		Universe.getTypeParticles( Particles.ARGON,		(int)(n * 0.0033) ) );
-		particleMap.put("ALMINUM",		Universe.getTypeParticles( Particles.ALMINUM,	(int)(n * 0.0027) ) );
-		particleMap.put("OXYGEN",		Universe.getTypeParticles( Particles.OXYGEN,	(int)(n * 0.78) ) );
-		particleMap.put("ETC",			Universe.getTypeParticles( Particles.ETC,		(int)(n * 0.0072) ) );
+		List<Particles> particleList = new ArrayList<Particles>();
 		
-		return particleMap;
+		particleList.addAll( Universe.getTypeParticles( Particles.CARBON,		(int)(n * 0.33) ) );
+		particleList.addAll( Universe.getTypeParticles( Particles.NITROGEN,		(int)(n * 0.10) ) );
+		particleList.addAll( Universe.getTypeParticles( Particles.NEON,			(int)(n * 0.098) ) );
+		particleList.addAll( Universe.getTypeParticles( Particles.MAGNETIUM,	(int)(n * 0.033) ) );
+		particleList.addAll( Universe.getTypeParticles( Particles.SILICON,		(int)(n * 0.033) ) );
+		particleList.addAll( Universe.getTypeParticles( Particles.IRON,			(int)(n * 0.029) ) );
+		particleList.addAll( Universe.getTypeParticles( Particles.SULPHUR,		(int)(n * 0.015) ) );
+		particleList.addAll( Universe.getTypeParticles( Particles.ARGON,		(int)(n * 0.0033) ) );
+		particleList.addAll( Universe.getTypeParticles( Particles.ALMINUM,		(int)(n * 0.0027) ) );
+		particleList.addAll( Universe.getTypeParticles( Particles.OXYGEN,		(int)(n * 0.78) ) );
+		particleList.addAll( Universe.getTypeParticles( Particles.ETC,			(int)(n * 0.0072) ) );
+		
+		return particleList;
 	}
 	
 	private static List<Particles> getTypeParticles( int type, int n ) {
@@ -79,6 +81,11 @@ public class Universe implements Runnable{
 	public void destroy() {
 		this.clock.done();
 		this.stop = true;
+
+		for(Iterator<Particles> iter=this.particles.iterator(); iter.hasNext();) {
+			Particles particle= iter.next();
+			particle.done();
+		}
 	}
 
 	public String getTimeStampWithStatus() {
@@ -91,9 +98,7 @@ public class Universe implements Runnable{
 		Thread clockThread = new Thread( this.clock );
 		clockThread.start();
 		
-		Map<String, List<Particles>> map = this.getParticlesMap();
-
-		System.out.println( map.size() );
+		this.particles = this.getParticlesList();
 
 		int currentYear = 0;
 		while( !stop ) {

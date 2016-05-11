@@ -18,7 +18,7 @@ public class Particles extends Thread{
 	private double z;
 	private double temporature;
 	private double radius;
-	private double speed_sec; 
+	private double speed_sec;
 	
 	private volatile boolean stop;
 
@@ -29,8 +29,10 @@ public class Particles extends Thread{
 		this.z = z;
 		this.temporature = -999999;
 		this.radius = 0.00001;
-		this.speed_sec = Math.random() * 100;
+		this.speed_sec = Math.random() * 1000;
 		this.stop = false;
+		
+		this.start();
 	}
 
 	public boolean isCollision(Particles particle) {
@@ -54,7 +56,12 @@ public class Particles extends Thread{
 	@Override
 	public void run() {
 		while(!this.stop) {
-			
+			try {
+				Thread.sleep( (long)this.speed_sec );
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 

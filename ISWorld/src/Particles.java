@@ -1,5 +1,5 @@
 
-public class Particles{
+public class Particles extends Thread{
 	public static final int CARBON = 1;
 	public static final int NITROGEN = 2;
 	public static final int NEON = 3;
@@ -18,9 +18,19 @@ public class Particles{
 	private double z;
 	private double temporature;
 	private double radius;
+	private double speed_sec; 
 	
+	private volatile boolean stop;
+
 	public Particles(int type, double x, double y, double z) {
-		
+		this.type = type;
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.temporature = -999999;
+		this.radius = 0.00001;
+		this.speed_sec = Math.random() * 100;
+		this.stop = false;
 	}
 
 	public boolean isCollision(Particles particle) {
@@ -33,8 +43,19 @@ public class Particles{
 		double distanceBetweenCenters = Math.sqrt( diffX*diffX + diffY*diffY + diffZ*diffZ );
 		
 		if( distanceBetweenCenters <= radiusSum )	return true;
-		
+
 		return false;
+	}
+	
+	public void done() {
+		this.stop = true;
+	}
+	
+	@Override
+	public void run() {
+		while(!this.stop) {
+			
+		}
 	}
 
 	public int getType() {
